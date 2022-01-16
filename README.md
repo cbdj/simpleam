@@ -116,8 +116,8 @@ if rewarded.is_loaded():
 
 
 <h3>And that's it!<h3>
-<h5>
-I hope this guide makes sense. If you still have a confusion, check out `example` folder.
+<h4>
+I hope this guide makes sense. If you still have a confusion, check out example folder.
 And I, wish you goodluck monetizing your pygame, android projects!
 <h4>
 
