@@ -1,50 +1,3 @@
-"""Simple module for monetizing android projects.
-Module is designed for pygame android applications, but I guess you can use it in other frameworks like kivy?
-Also, module is inspired by KivMob, so you should definetly check it out too: https://github.com/MichaelStott/KivMob
-
-And now, a simple guide on how to use it. In case you dont understand something, you should check Google firebase focs.
-
-This module only works on android, and using buildozer.
-Modifications to buildozer.spec file:
-
-- requirements = jnius, ...
-- android.permissions = INTERNET, ACCESS_NETWORK_STATE
-- android.api = 30
-- android.minapi = 21
-- android.sdk = 24
-- android.ndk = 19b
-- android.gradle_dependencies = 'com.google.firebase:firebase-ads:10.2.0'
-- p4a.branch = master
-- android.meta_data = com.google.android.gms.ads.APPLICATION_ID=(Your AdMob app id, or this test id: ca-app-pub-3940256099942544~3347511713)
-
-It's better to mention, that you dont actually need to download jnius on your pc. 
-Buildozer can download it when building your app.
-
-To use the module, you have to initialize mobile ads first. You can do it by this function:
-simpleam.simpleam_init("Your AdMob ID")
-Dont supply an argument, if you want to use TEST ID. This APPLIES TO ALL ADMOB OBJECTS
-
-Now, you can actually create some objects. Let's create a banner:
-banner = simpleam.Banner(ad_id=None, position="BOTTOM", size="SMART_BANNER")
-
-This will create a banner in the bottom part of the screen, with "smart" size, which will automatically pick the best banner size.
-Position should be a constant, representing a layout.Gravity class constant. For example, "LEFT" - Gravity.LEFT, "CENTER" - Gravity.CENTER etc.
-For more, check this documentation: https://developer.android.com/reference/android/view/Gravity
-
-Banner size however, can be a constant or custom tuple (Which of course not always can be displayed. Use constant size)
-SMART_BANNER would be the best, because it automatically scales depending on your device screen.
-But if you want use other sizes, you can pass a (x, y) argument, or other constants: 
-https://developers.google.com/android/reference/com/google/android/gms/ads/AdSize
-
-- That's all cool and anything, but how do I display the banner itself?
-
-Firstly, you have to load an ad. 
-banner.load_ad()
-All AdMob objects have this method, so it's quite similar
-
-
-"""
-
 try:
     from jnius import autoclass, PythonJavaClass, java_method #type: ignore
     from android.runnable import run_on_ui_thread #type: ignore
@@ -83,14 +36,6 @@ class AdObject:
         self.AD_ID = ad_id
         self.admob_obj = None
         self.loaded = False
-
-    @run_on_ui_thread
-    def _is_loaded(self) -> None:
-        self.loaded = self.admob_obj.isLoaded()
-        
-    def is_loaded(self) -> bool:
-        self._is_loaded()
-        return self.loaded
     
     @run_on_ui_thread
     def _show(self) -> None:
@@ -180,6 +125,14 @@ class Interstitial(AdObject):
         self.admob_obj.setAdUnitId(self.AD_ID)
 
     @run_on_ui_thread
+    def _is_loaded(self) -> None:
+        self.loaded = self.admob_obj.isLoaded()
+        
+    def is_loaded(self) -> bool:
+        self._is_loaded()
+        return self.loaded
+
+    @run_on_ui_thread
     def show(self) -> None:
         if self.is_loaded():
             self.admob_obj.show()
@@ -206,6 +159,14 @@ class Rewarded(AdObject):
     def load_ad(self, filters: dict = {}) -> None:
         self.loaded = False
         self.admob_obj.loadAd(self.AD_ID, self.get_builder(filters).build())
+
+    @run_on_ui_thread
+    def _is_loaded(self) -> None:
+        self.loaded = self.admob_obj.isLoaded()
+        
+    def is_loaded(self) -> bool:
+        self._is_loaded()
+        return self.loaded
 
     def show(self) -> None:
     	if self.is_loaded():
