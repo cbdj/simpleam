@@ -21,10 +21,6 @@ class JC:
     LinearLayout = autoclass("android.widget.LinearLayout")
     MobileAds = autoclass("com.google.android.gms.ads.MobileAds")
 
-    RewardItem = autoclass("com.google.android.gms.ads.reward.RewardItem")
-    RewardedVideoAd = autoclass("com.google.android.gms.ads.reward.RewardedVideoAd")
-    RewardedVideoAdListener = autoclass("com.google.android.gms.ads.reward.RewardedVideoAdListener")
-
 def simpleam_init(app_id: str = None):
     """ Initializes AdMob MobileAds class. Use this function at the start to use all functionality. 
         \nTakes AdMob app id as an argument. Test app Ids is used if no argument was supplied"""
