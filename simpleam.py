@@ -32,10 +32,6 @@ class AdObject:
         self.AD_ID = ad_id
         self.admob_obj = None
         self.loaded = False
-    
-    @run_on_ui_thread
-    def _show(self) -> None:
-        self.admob_obj.show()
 
     @run_on_ui_thread
     def load_ad(self, filters: dict = {}) -> None:
@@ -159,11 +155,15 @@ class Rewarded(AdObject):
     @run_on_ui_thread
     def _is_loaded(self) -> None:
         self.loaded = self.admob_obj.isLoaded()
+
+    @run_on_ui_thread
+    def _show(self) -> None:
+        self.admob_obj.show()
         
     def is_loaded(self) -> bool:
         self._is_loaded()
         return self.loaded
-
+    
     def show(self) -> None:
     	if self.is_loaded():
             while not self.viewed_ad:
