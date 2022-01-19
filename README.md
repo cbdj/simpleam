@@ -6,7 +6,6 @@ Now I\`ll explain here the basic usage of this "module": </br>
 **Take in mind, this module requires from you basic knowledge of p4a and buidozer. In case you dont understand something, you can check Google firebase docs or `example` folder.**
 
 Modifications to buildozer.spec file:
-- `requirements = jnius, ...`
 - `android.permissions = INTERNET, ACCESS_NETWORK_STATE`
 - `android.api = 30`
 - `android.minapi = 21`
