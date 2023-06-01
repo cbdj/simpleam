@@ -6,21 +6,19 @@ Now I\`ll explain here the basic usage of this "module": </br>
 **Take in mind, this module requires from you basic knowledge of p4a and buidozer. In case you dont understand something, you can check Google firebase docs or `example` folder.**
 
 Modifications to buildozer.spec file:
-- `android.permissions = INTERNET, ACCESS_NETWORK_STATE`
-- `android.api = 30`
-- `android.minapi = 21`
-- `android.sdk = 24`
-- `android.ndk = 19b`
-- `android.gradle_dependencies = 'com.google.firebase:firebase-ads:10.2.0'`
+- `android.permissions = INTERNET, ACCESS_NETWORK_STATE, AD_ID `
+- `android.api = 33`
+- `android.ndk = 25b`
+- `android.gradle_dependencies = com.google.android.gms:play-services-ads:22.1.0,com.google.gms:google-services:4.3.15,androidx.work:work-runtime:2.7.1`
 - `p4a.branch = master`
 - `android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713 (TEST app ID, in release use your own app ID)`
+- `android.add_src = java`
 
 It's better to mention, that you dont actually need to download jnius on your pc. 
 Buildozer can download it when building your app.
 
 To use the module, you have to initialize mobile ads first. You can do it by this function:</br>
-`simpleam.simpleam_init("Your AdMob ID")`</br>
-Dont supply an argument, if you want to use TEST ID. This **APPLIES TO ALL ADMOB OBJECTS**
+`simpleam.simpleam_init()`</br>
 
 Now, you can actually create some objects. Let's create a banner:</br>
 `banner = simpleam.Banner(ad_id=None, position="BOTTOM", size="SMART_BANNER")`
@@ -76,34 +74,31 @@ It takes some code examples, but I couldnt say it's hard to understand. Let's st
 points = 0
 rewarded = simplead.Rewarded(ad_id=None)
 
-class Callback(simpleam.RewardedCallbacks):
-"""Callback class, which takes events from rewarded video, and makes some manipulations. 
-   As an example, it adds 50 points, if user fully watched the ad.
-   It also indicates if ad is loaded, if it failed to load, if it's closed and etc."""
-		
-    def on_rewarded_loaded(self):
-        print("SIMPLEAM: Ad is loaded!")
+class FullScreenContentCallbacks:
+    def onAdClicked (self):
+        print("simpleam: FullScreenContentCallbacks : onAdClicked")
+    def onAdDismissedFullScreenContent(self):
+        print("simpleam: FullScreenContentCallbacks : onAdDismissedFullScreenContent")
+    def onAdFailedToShowFullScreenContent(self, adError):
+        print(f"simpleam: FullScreenContentCallbacks : onAdFailedToShowFullScreenContent : {adError.toString()}")
+    def onAdImpression(self):
+        print("simpleam: FullScreenContentCallbacks : onAdImpression")
+    def onAdShowedFullScreenContent(self):
+        print("simpleam: FullScreenContentCallbacks : onAdShowedFullScreenContent")
 
-    def on_rewarded_opened(self):
-        print("SIMPLEAM: Ad is opened!")
+class PaidEventCallbacks:
+    def onPaidEvent(self, value):
+        print(f"simpleam: PaidEventCallbacks : onPaidEvent : code : {value.getCurrencyCode()}, precision : {value.getPrecisionType()}, value: {value.getValueMicros()}")      
+        
+class OnUserEarnedRewardCallbacks:
+    def onUserEarnedReward(self, reward):
+        print(f"simpleam: OnUserEarnedRewardCallbacks : onUserEarnedReward : amount : {reward.getAmount()}, type  : {reward.getType()}")   
+		points += 50
 
-    def on_rewarded_started(self):
-        print("SIMPLEAM: Ad is started!")
-
-    def on_rewarded_closed(self):
-        print("SIMPLEAM: Ad closed!")
-
-    def on_rewarded_success(self, reward):
-        points += 50
-        print(f"SIMPLEAM: Ad succesfully ended!")
-
-    def on_rewarded_left(self):
-        print("SIMPLEAM: Ad left application!")
-
-    def on_rewarded_load_fail(self, num):
-        print("SIMPLEAM: Ad failed to load!")
-
-rewarded.set_listener(Callbacks()) # Loads our listener in the rewarded ad class. Now we can load a video
+# Loads our listeners in the rewarded ad class. Now we can load a video
+rewarded.set_FullScreenContentCallbacks(self, FullScreenContentCallbacks()):        
+rewarded.set_OnUserEarnedRewardListener(self, OnUserEarnedRewardCallbacks()):
+rewarded.set_OnPaidEventListener(self, PaidEventCallbacks()):
 rewarded.load_ad()
 
 if rewarded.is_loaded():
